@@ -13,54 +13,46 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            name: linux
-            executable: mtg-treachery-tool
+            suffix: linux
           - os: windows-latest
-            name: windows
-            executable: mtg-treachery-tool.exe
+            suffix: windows
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Install deps
+        run: pip install pillow tqdm pyinstaller
+
+      - name: Build
+        run: pyinstaller --onefile script.py
+
+      - name: Rename binary
         run: |
-          pip install pillow tqdm pyinstaller
+          mkdir release
+          if [ "${{ matrix.suffix }}" = "linux" ]; then
+            mv dist/script release/mtg-treachery-tool-linux
+          else
+            mv dist/script.exe release/mtg-treachery-tool-windows.exe
+          fi
+        shell: bash
 
-      - name: Build executable
-        run: |
-          pyinstaller --onefile --name ${{ matrix.executable }} script.py
-
-      - name: Rename output (Linux)
-        if: matrix.name == 'linux'
-        run: mv dist/${{ matrix.executable }} dist/mtg-treachery-tool-linux
-
-      - name: Rename output (Windows)
-        if: matrix.name == 'windows'
-        run: |
-          rename dist\\${{ matrix.executable }} mtg-treachery-tool-windows.exe
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.name }}
-          path: dist/*
+          name: build-${{ matrix.suffix }}
+          path: release/*
 
   release:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v2
         with:
           files: |
             build-linux/*
