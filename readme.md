@@ -17,14 +17,15 @@ Go to the **Releases** section and download the executable for your system:
 
 ### 2. Prepare your files
 
-Create the following structure:
+Put the executable in a dedicated folder and create the following structure:
 
 ```
+*executable goes here*
 input/
 output/
 ```
 * Get the source material (source cards images) from the [treachery website](https://mtgtreachery.net/#download). Make sure to pick the IMG (.png) versions of your desired language.
-* Put your card images in the `input/` folder
+* Put the freshly downloaded card images in the `input/` folder
 * Leave `output/` empty (results will be generated there)
 
 ---
