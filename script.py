@@ -113,7 +113,6 @@ def main():
         output_path = os.path.join(OUTPUT_DIR, file)
         result.save(output_path, quality=100)
 
-        # afficher le nom du fichier en cours
         tqdm.write(f"✔ {file}")
 
     print(f"Your images are ready for MPC !")
