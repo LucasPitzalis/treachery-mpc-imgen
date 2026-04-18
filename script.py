@@ -1,4 +1,5 @@
 from PIL import Image
+from tqdm import tqdm
 import os
 import math
 
@@ -97,13 +98,26 @@ def process_image(path):
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    for file in os.listdir(INPUT_DIR):
-        if file.lower().endswith((".png", ".jpg", ".jpeg")):
-            path = os.path.join(INPUT_DIR, file)
-            result = process_image(path)
+    files = [
+        f for f in os.listdir(INPUT_DIR)
+        if f.lower().endswith((".png", ".jpg", ".jpeg"))
+    ]
 
-            output_path = os.path.join(OUTPUT_DIR, file)
-            result.save(output_path, quality=100)
+    print(f"Starting generation of {len(files)} images.")
+
+    for file in tqdm(files, desc="Processing", unit="image"):
+        path = os.path.join(INPUT_DIR, file)
+
+        result = process_image(path)
+
+        output_path = os.path.join(OUTPUT_DIR, file)
+        result.save(output_path, quality=100)
+
+        # afficher le nom du fichier en cours
+        tqdm.write(f"✔ {file}")
+
+    print(f"Your images are ready for MPC !")
+           
 
 if __name__ == "__main__":
     main()
